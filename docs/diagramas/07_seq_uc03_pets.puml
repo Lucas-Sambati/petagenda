@@ -1,0 +1,68 @@
+@startuml 07_seq_uc03_pets
+!include _estilo.iuml
+title UC03 – Manter pets
+hide footbox
+autonumber
+
+actor "Atendente" as A
+boundary "Telas de\npets" as T
+control "pets.py\n(Controller)" as C
+participant "validacoes.py" as V
+entity "Pet\n(Model)" as M
+database "SQLite" as DB
+
+alt Consultar pets (RF08)
+  A -> T : busca pelo nome do pet ou do tutor
+  T -> C : GET /pets/?q=termo
+  C -> DB : SELECT pet JOIN cliente
+  DB --> C : pets encontrados
+  C --> T : lista.html
+  T --> A : exibe espécie, porte, idade e tutor
+
+else Cadastrar pet (RF07)
+  A -> T : clica em "Novo pet"
+  T -> C : GET /pets/novo
+  C -> DB : SELECT cliente ORDER BY nome
+  C --> T : formulário com os tutores
+  A -> T : escolhe o tutor, preenche e salva
+  T -> C : POST /pets/novo
+  C -> V : validar_pet(form)
+  V -> DB : SELECT cliente WHERE id = ? (RN02)
+  V --> C : (dados, erros)
+  alt dados válidos
+    C -> M : Pet(**dados)
+    C -> DB : INSERT INTO pet
+    C --> T : redireciona ao detalhe do tutor
+    T --> A : "Pet cadastrado com sucesso!"
+  else dados inválidos
+    C --> T : formulário com os erros
+  end
+
+else Alterar pet (RF09)
+  A -> T : altera os dados e clica em "Salvar"
+  T -> C : POST /pets/{id}/editar
+  C -> V : validar_pet(form)
+  V --> C : (dados, erros)
+  alt dados válidos
+    C -> DB : UPDATE pet SET ...
+    C --> T : redireciona à lista
+    T --> A : "Dados do pet atualizados!"
+  else dados inválidos
+    C --> T : formulário com os erros
+  end
+
+else Excluir pet (RF10)
+  A -> T : clica em "Excluir" e confirma
+  T -> C : POST /pets/{id}/excluir
+  C -> M : possui_agendamentos()
+  M -> DB : SELECT agendamento WHERE pet_id = ?
+  M --> C : True / False
+  alt pet sem agendamentos
+    C -> DB : DELETE FROM pet
+    C --> T : redireciona à lista
+    T --> A : "Pet excluído com sucesso!"
+  else pet com agendamentos (RN08)
+    C --> T : aviso: histórico deve ser preservado
+  end
+end
+@enduml

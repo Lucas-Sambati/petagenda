@@ -1,0 +1,30 @@
+@startuml 11_arquitetura
+!include _estilo.iuml
+skinparam componentStyle rectangle
+skinparam nodesep 40
+skinparam ranksep 45
+
+actor "Usuário\n(Atendente / Administrador)" as U
+node "Navegador web" {
+  component "Páginas HTML\n(Bootstrap 5 + JavaScript)" as UI
+}
+
+node "Aplicação Flask (Python 3)" {
+  component "**Controller**\nBlueprints: auth, main, clientes,\npets, servicos, agendamentos" as BP
+  component "**Segurança**\nseguranca.py\n(login, perfis, CSRF)" as SEG
+  component "**Regras de negócio**\nvalidacoes.py\n(RN01 a RN10)" as VAL
+  component "**View**\nTemplates Jinja2" as TPL
+  component "**Model**\nEntidades SQLAlchemy\nUsuario, Cliente, Pet,\nServico, Agendamento" as MOD
+}
+
+database "SQLite\n(petagenda.db)" as DB
+
+U -down-> UI : utiliza
+UI -down-> BP : requisição HTTP\n(GET / POST)
+BP -left-> SEG : verifica sessão\ne perfil
+BP -right-> VAL : valida dados
+BP -down-> MOD : consulta / grava
+BP -down-> TPL : renderiza
+TPL -up-> UI : HTML de resposta
+MOD -down-> DB : SQL gerado\npelo ORM
+@enduml

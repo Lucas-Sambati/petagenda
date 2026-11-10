@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block titulo %}Entrar{% endblock %}
+{% block conteudo %}
+<div class="login-wrapper">
+  <div class="card login-card shadow">
+    <div class="card-body p-4 p-md-5">
+      <div class="text-center mb-4">
+        <span class="marca">{{ m.logo(56) }}</span>
+        <h1 class="h3 fw-bold mt-2 mb-0">PetAgenda</h1>
+        <p class="text-muted mb-0">Agendamento de banho e tosa</p>
+      </div>
+
+      <form method="post" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+          <label for="email" class="form-label">E-mail</label>
+          <input type="email" class="form-control" id="email" name="email" value="{{ email }}"
+                 placeholder="seu.email@petagenda.com" autocomplete="username" autofocus>
+        </div>
+        <div class="mb-4">
+          <label for="senha" class="form-label">Senha</label>
+          <input type="password" class="form-control" id="senha" name="senha" placeholder="Sua senha"
+                 autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-box-arrow-in-right me-1"></i>Entrar</button>
+      </form>
+
+      {% if config.EXIBIR_ACESSO_DEMO %}
+      <div class="alert alert-light border small mt-4 mb-0">
+        <strong>Acesso de demonstração</strong><br>
+        Administrador: admin@petagenda.com / admin123<br>
+        Atendente: atendente@petagenda.com / atendente123
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

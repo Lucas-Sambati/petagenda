@@ -1,0 +1,52 @@
+@startuml 10_seq_uc05_agendamentos_parte2
+!include _estilo.iuml
+skinparam maxMessageSize 170
+title UC05 – Manter agendamentos (parte 2: alterar, concluir/cancelar e excluir)
+hide footbox
+autonumber
+
+actor "Atendente" as A
+boundary "Telas da\nagenda" as T
+control "agendamentos.py\n(Controller)" as C
+participant "validacoes.py" as V
+entity "Agendamento\n(Model)" as M
+database "SQLite" as DB
+
+alt Alterar / remarcar agendamento (RF17)
+  A -> T : altera serviço, data ou horário e salva
+  T -> C : POST /agendamentos/{id}/editar
+  C -> M : pode_alterar() (RN07)
+  M --> C : True se status = AGENDADO
+  C -> V : validar_agendamento(form, id)
+  V --> C : (dados, erros)
+  alt dados válidos
+    C -> DB : UPDATE agendamento SET ...
+    C --> T : redireciona à agenda do dia
+    T --> A : "Agendamento alterado com sucesso!"
+  else dados inválidos
+    C --> T : formulário com o motivo
+  end
+
+else Concluir ou cancelar (RF18)
+  A -> T : clica em "Concluir" ou "Cancelar"
+  T -> C : POST /agendamentos/{id}/status
+  C -> M : concluir() / cancelar()
+  alt status atual = AGENDADO
+    M -> M : status = CONCLUIDO / CANCELADO
+    C -> DB : UPDATE agendamento SET status
+    C --> T : redireciona à agenda do dia
+    T --> A : sucesso (cancelar libera o horário)
+  else já concluído ou cancelado (RN07)
+    M --> C : ValueError
+    C --> T : redireciona com aviso
+    T --> A : "Somente agendamentos com\nstatus Agendado podem ser alterados."
+  end
+
+else Excluir agendamento (RF19)
+  A -> T : clica em "Excluir" e confirma
+  T -> C : POST /agendamentos/{id}/excluir
+  C -> DB : DELETE FROM agendamento
+  C --> T : redireciona à agenda do dia
+  T --> A : "Agendamento excluído com sucesso!"
+end
+@enduml

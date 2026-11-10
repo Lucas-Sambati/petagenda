@@ -1,0 +1,110 @@
+@startuml 04_classes
+!include _estilo.iuml
+skinparam classAttributeIconSize 0
+hide circle
+hide empty members
+skinparam nodesep 60
+skinparam ranksep 60
+
+class Usuario {
+  - id : int
+  - nome : str
+  - email : str
+  - senha_hash : str
+  - perfil : Perfil
+  - ativo : bool
+  - criado_em : datetime
+  --
+  + definir_senha(senha : str) : void
+  + verificar_senha(senha : str) : bool
+  + is_admin() : bool
+}
+
+class Cliente {
+  - id : int
+  - nome : str
+  - cpf : str
+  - telefone : str
+  - email : str
+  - endereco : str
+  - criado_em : datetime
+  --
+  + cpf_formatado() : str
+  + telefone_formatado() : str
+  + possui_pets() : bool
+}
+
+class Pet {
+  - id : int
+  - nome : str
+  - especie : Especie
+  - raca : str
+  - porte : Porte
+  - data_nascimento : date
+  - observacoes : str
+  - criado_em : datetime
+  --
+  + idade() : int
+  + possui_agendamentos() : bool
+}
+
+class Servico {
+  - id : int
+  - nome : str
+  - descricao : str
+  - preco : Decimal
+  - duracao_minutos : int
+  - ativo : bool
+  --
+  + possui_agendamentos() : bool
+}
+
+class Agendamento {
+  - id : int
+  - data_hora_inicio : datetime
+  - data_hora_fim : datetime
+  - valor : Decimal
+  - status : StatusAgendamento
+  - observacoes : str
+  - criado_em : datetime
+  --
+  + {static} calcular_fim(inicio : datetime, duracao_minutos : int) : datetime
+  + {static} existe_conflito(inicio : datetime, fim : datetime, ignorar_id : int) : bool
+  + pode_alterar() : bool
+  + concluir() : void
+  + cancelar() : void
+}
+
+enum Perfil <<enumeration>> {
+  ADMIN
+  ATENDENTE
+}
+
+enum Especie <<enumeration>> {
+  CAO
+  GATO
+  OUTRO
+}
+
+enum Porte <<enumeration>> {
+  PEQUENO
+  MEDIO
+  GRANDE
+}
+
+enum StatusAgendamento <<enumeration>> {
+  AGENDADO
+  CONCLUIDO
+  CANCELADO
+}
+
+Cliente "1" -- "0..*" Pet : possui >
+Pet "1" -- "0..*" Agendamento : recebe >
+Servico "1" -- "0..*" Agendamento : é prestado em >
+Usuario "1" -- "0..*" Agendamento : registra >
+
+Usuario ..> Perfil
+Pet ..> Especie
+Pet ..> Porte
+Agendamento ..> StatusAgendamento
+@enduml

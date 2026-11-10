@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block titulo %}Agenda{% endblock %}
+{% block conteudo %}
+<div class="page-header">
+  <div>
+    <h1 class="h3 mb-0"><i class="bi bi-calendar-week me-2"></i>Agenda</h1>
+    <p class="text-muted mb-0">
+      {% if data_filtro %}Agendamentos de {{ data_filtro|data_extenso }}
+      {% elif historico %}Todos os agendamentos (incluindo anteriores)
+      {% else %}Agendamentos de hoje em diante{% endif %}
+    </p>
+  </div>
+  <a href="{{ url_for('agendamentos.novo') }}" class="btn btn-primary"><i class="bi bi-calendar-plus me-1"></i>Novo agendamento</a>
+</div>
+
+<div class="card">
+  <div class="card-body border-bottom">
+    <form class="row g-2 align-items-end" method="get">
+      <div class="col-sm-6 col-md-3">
+        <label for="data" class="form-label small mb-1">Data</label>
+        <input type="date" class="form-control" id="data" name="data" value="{{ data_filtro.isoformat() if data_filtro else '' }}">
+      </div>
+      <div class="col-sm-6 col-md-3">
+        <label for="status" class="form-label small mb-1">Status</label>
+        <select class="form-select" id="status" name="status">
+          <option value="">Todos</option>
+          {% for s in status_opcoes %}
+          <option value="{{ s.name }}" {% if status_filtro == s %}selected{% endif %}>{{ s.value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto">
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="historico" name="historico" value="1" {% if historico %}checked{% endif %}>
+          <label class="form-check-label small" for="historico">Incluir anteriores</label>
+        </div>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+        <a class="btn btn-link" href="{{ url_for('agendamentos.listar') }}">Limpar</a>
+      </div>
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr><th>Data</th><th>Horário</th><th>Pet / Tutor</th><th>Serviço</th><th class="text-end">Valor</th><th>Status</th><th>Agendado por</th><th class="text-end">Ações</th></tr>
+      </thead>
+      <tbody>
+      {% for a in agendamentos %}
+        <tr class="{{ 'text-muted' if a.status.name == 'CANCELADO' else '' }}">
+          <td class="text-nowrap">{{ a.data_hora_inicio|data_br }}</td>
+          <td class="text-nowrap">{{ a.data_hora_inicio|hora }}–{{ a.data_hora_fim|hora }}</td>
+          <td><strong>{{ a.pet.nome }}</strong><div class="small text-muted">{{ a.pet.cliente.nome }}</div></td>
+          <td>{{ a.servico.nome }}</td>
+          <td class="text-end text-nowrap">{{ a.valor|moeda }}</td>
+          <td>{{ m.badge_status(a.status) }}</td>
+          <td class="small">{{ a.usuario.nome }}</td>
+          <td class="text-end text-nowrap">
+            {% if a.pode_alterar() %}
+              {{ m.botoes_status(a) }}
+              <a href="{{ url_for('agendamentos.editar', agendamento_id=a.id) }}" class="btn btn-sm btn-outline-primary" title="Editar / remarcar"><i class="bi bi-pencil"></i></a>
+            {% endif %}
+            {{ m.botao_excluir(url_for('agendamentos.excluir', agendamento_id=a.id), "Excluir definitivamente este agendamento?") }}
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="8" class="text-center text-muted py-4">Nenhum agendamento encontrado para o filtro selecionado.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% set validos = agendamentos|rejectattr("status.name", "equalto", "CANCELADO")|list %}
+  <div class="card-footer bg-white small text-muted d-flex justify-content-between">
+    <span>{{ agendamentos|length }} agendamento(s)</span>
+    <span>Total previsto (sem cancelados): <strong>{{ validos|sum(attribute="valor")|moeda }}</strong></span>
+  </div>
+</div>
+{% endblock %}

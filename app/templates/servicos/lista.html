@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block titulo %}Serviços{% endblock %}
+{% block conteudo %}
+<div class="page-header">
+  <div>
+    <h1 class="h3 mb-0"><i class="bi bi-scissors me-2"></i>Serviços</h1>
+    <p class="text-muted mb-0">Catálogo de serviços, preços e duração de cada atendimento.</p>
+  </div>
+  {% if g.usuario.is_admin %}
+  <a href="{{ url_for('servicos.novo') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Novo serviço</a>
+  {% endif %}
+</div>
+
+{% if not g.usuario.is_admin %}
+<div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>Somente o perfil Administrador pode cadastrar, alterar ou excluir serviços.</div>
+{% endif %}
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr><th>Serviço</th><th class="text-end">Preço</th><th class="text-center">Duração</th><th class="text-center">Situação</th>{% if g.usuario.is_admin %}<th class="text-end">Ações</th>{% endif %}</tr>
+      </thead>
+      <tbody>
+      {% for servico in servicos %}
+        <tr class="{{ '' if servico.ativo else 'text-muted' }}">
+          <td>
+            <span class="fw-semibold">{{ servico.nome }}</span>
+            {% if servico.descricao %}<div class="small text-muted">{{ servico.descricao }}</div>{% endif %}
+          </td>
+          <td class="text-end text-nowrap">{{ servico.preco|moeda }}</td>
+          <td class="text-center">{{ servico.duracao_minutos|duracao }}</td>
+          <td class="text-center">
+            {% if servico.ativo %}<span class="badge rounded-pill text-bg-success">Ativo</span>
+            {% else %}<span class="badge rounded-pill text-bg-secondary">Inativo</span>{% endif %}
+          </td>
+          {% if g.usuario.is_admin %}
+          <td class="text-end text-nowrap">
+            <a href="{{ url_for('servicos.editar', servico_id=servico.id) }}" class="btn btn-sm btn-outline-primary" title="Editar"><i class="bi bi-pencil"></i></a>
+            {{ m.botao_excluir(url_for('servicos.excluir', servico_id=servico.id), "Excluir o serviço " ~ servico.nome ~ "?") }}
+          </td>
+          {% endif %}
+        </tr>
+      {% else %}
+        <tr><td colspan="5" class="text-center text-muted py-4">Nenhum serviço cadastrado.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+@startuml 09_seq_uc05_agendamentos_parte1
+!include _estilo.iuml
+skinparam maxMessageSize 140
+title UC05 – Manter agendamentos (parte 1: consultar e cadastrar)
+hide footbox
+autonumber
+
+actor "Atendente" as A
+boundary "Telas da\nagenda" as T
+control "agendamentos.py\n(Controller)" as C
+participant "validacoes.py" as V
+entity "Agendamento\n(Model)" as M
+database "SQLite" as DB
+
+alt Consultar agenda (RF16)
+  A -> T : informa data e/ou status e clica em "Filtrar"
+  T -> C : GET /agendamentos/?data=&status=
+  C -> DB : SELECT agendamento (filtros) ORDER BY início
+  DB --> C : agendamentos
+  C --> T : lista.html
+  T --> A : exibe a agenda e o total previsto
+
+else Cadastrar agendamento (RF15)
+  A -> T : escolhe pet, serviço, data e horário
+  T -> C : POST /agendamentos/novo
+  C -> V : validar_agendamento(form)
+  V -> DB : SELECT pet e serviço
+  DB --> V : pet, serviço (ativo?) (RN09)
+  V -> M : calcular_fim(inicio, duracao) (RN06)
+  M --> V : data_hora_fim
+  V -> V : data futura? (RN03)\nhorário de funcionamento? (RN05)
+  V -> M : existe_conflito(inicio, fim) (RN04)
+  M -> DB : SELECT agendamentos ativos\nque se sobrepõem ao período
+  DB --> M : resultado
+  M --> V : True / False
+  V --> C : (dados, erros)
+  alt todas as regras atendidas
+    C -> M : Agendamento(..., valor = preço do serviço,\nstatus = AGENDADO)
+    C -> DB : INSERT INTO agendamento
+    C --> T : redireciona à agenda do dia
+    T --> A : "Agendamento confirmado"
+  else alguma regra violada
+    C --> T : formulário com o motivo
+    T --> A : ex.: "Horário indisponível"
+  end
+end
+@enduml

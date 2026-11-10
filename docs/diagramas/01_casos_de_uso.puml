@@ -1,0 +1,32 @@
+@startuml 01_casos_de_uso
+!include _estilo.iuml
+left to right direction
+
+actor "Atendente" as AT
+actor "Administrador" as AD
+AD -left-|> AT
+
+rectangle "PetAgenda – Sistema de Agendamento para Pet Shop" {
+  usecase "UC01 – Autenticar usuário" as UC01
+  usecase "UC02 – Manter clientes" as UC02
+  usecase "UC03 – Manter pets" as UC03
+  usecase "UC05 – Manter agendamentos" as UC05
+  usecase "UC04 – Manter serviços" as UC04
+}
+
+AT -- UC01
+AT -- UC02
+AT -- UC03
+AT -- UC05
+AD -- UC04
+
+note right of UC03
+  "Manter" = cadastrar, consultar,
+  alterar e excluir (CRUD)
+end note
+
+note right of UC04
+  Apenas o Administrador altera serviços;
+  todos os perfis podem consultá-los (RN10)
+end note
+@enduml

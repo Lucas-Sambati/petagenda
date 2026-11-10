@@ -1,0 +1,99 @@
+/* Identidade visual do PetAgenda (complementa o Bootstrap 5). */
+:root {
+  --pa-primaria: #0f766e;
+  --pa-primaria-escura: #115e59;
+  --pa-primaria-mais-escura: #134e4a;
+  --pa-fundo: #f3f6f5;
+
+  --bs-primary: #0f766e;
+  --bs-primary-rgb: 15, 118, 110;
+  --bs-primary-text-emphasis: #134e4a;
+  --bs-primary-bg-subtle: #ccfbf1;
+  --bs-primary-border-subtle: #99f6e4;
+  --bs-link-color: #0f766e;
+  --bs-link-color-rgb: 15, 118, 110;
+  --bs-link-hover-color: #115e59;
+  --bs-link-hover-color-rgb: 17, 94, 89;
+}
+
+body {
+  background: var(--pa-fundo);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; }
+
+.navbar-petagenda { background: linear-gradient(90deg, #0f766e, #0d9488); }
+.navbar-petagenda .navbar-text { color: rgba(255, 255, 255, .85); }
+.navbar-petagenda .nav-link.active { font-weight: 600; }
+
+.btn-primary {
+  --bs-btn-bg: var(--pa-primaria);
+  --bs-btn-border-color: var(--pa-primaria);
+  --bs-btn-hover-bg: var(--pa-primaria-escura);
+  --bs-btn-hover-border-color: var(--pa-primaria-escura);
+  --bs-btn-active-bg: var(--pa-primaria-mais-escura);
+  --bs-btn-active-border-color: var(--pa-primaria-mais-escura);
+  --bs-btn-disabled-bg: var(--pa-primaria);
+  --bs-btn-disabled-border-color: var(--pa-primaria);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--pa-primaria);
+  --bs-btn-border-color: var(--pa-primaria);
+  --bs-btn-hover-bg: var(--pa-primaria);
+  --bs-btn-hover-border-color: var(--pa-primaria);
+  --bs-btn-active-bg: var(--pa-primaria-escura);
+  --bs-btn-active-border-color: var(--pa-primaria-escura);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: #5eead4;
+  box-shadow: 0 0 0 .25rem rgba(15, 118, 110, .2);
+}
+
+.form-check-input:checked {
+  background-color: var(--pa-primaria);
+  border-color: var(--pa-primaria);
+}
+
+.form-label { font-weight: 500; }
+
+.card {
+  border: 0;
+  border-radius: .75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+}
+
+.card > .card-header:first-child { border-radius: .75rem .75rem 0 0; }
+
+.card-stat { transition: transform .15s ease, box-shadow .15s ease; }
+.card-stat:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, .08); }
+.card-stat .icone {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.table > :not(caption) > * > * { vertical-align: middle; }
+.table thead th { font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; color: #6b7280; }
+
+.login-wrapper { min-height: 75vh; display: grid; place-items: center; }
+.login-card { max-width: 430px; width: 100%; }
+.marca { color: var(--pa-primaria); }

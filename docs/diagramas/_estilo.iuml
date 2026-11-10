@@ -1,0 +1,94 @@
+' Estilo visual comum a todos os diagramas do PetAgenda
+skinparam dpi 200
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam roundCorner 10
+skinparam backgroundColor #FFFFFF
+skinparam ArrowColor #1F2937
+skinparam ArrowThickness 1.1
+skinparam TitleFontSize 15
+skinparam TitleFontStyle bold
+
+skinparam note {
+  BackgroundColor #FFFBEB
+  BorderColor #D97706
+  FontSize 11
+}
+
+skinparam actor {
+  BackgroundColor #F0FDFA
+  BorderColor #0F766E
+}
+
+skinparam usecase {
+  BackgroundColor #F0FDFA
+  BorderColor #0F766E
+  FontSize 12
+}
+
+skinparam rectangle {
+  BorderColor #0F766E
+  FontStyle bold
+}
+
+skinparam class {
+  BackgroundColor #F0FDFA
+  BorderColor #0F766E
+  HeaderBackgroundColor #CCFBF1
+  AttributeFontSize 11
+  FontSize 12
+}
+
+skinparam entity {
+  BackgroundColor #F0FDFA
+  BorderColor #0F766E
+}
+
+skinparam activity {
+  BackgroundColor #F0FDFA
+  BorderColor #0F766E
+  DiamondBackgroundColor #FEF3C7
+  DiamondBorderColor #D97706
+}
+
+skinparam swimlane {
+  BorderColor #94A3B8
+  TitleFontStyle bold
+  TitleFontSize 13
+}
+
+skinparam sequence {
+  ParticipantBackgroundColor #F0FDFA
+  ParticipantBorderColor #0F766E
+  ActorBackgroundColor #F0FDFA
+  ActorBorderColor #0F766E
+  LifeLineBorderColor #64748B
+  LifeLineBackgroundColor #E2E8F0
+  GroupBorderColor #64748B
+  GroupBackgroundColor #F1F5F9
+  GroupHeaderFontStyle bold
+  BoxBorderColor #94A3B8
+  DividerBackgroundColor #E2E8F0
+  MessageAlignment left
+}
+
+skinparam database {
+  BackgroundColor #F0FDFA
+  BorderColor #0F766E
+}
+
+skinparam component {
+  BackgroundColor #F0FDFA
+  BorderColor #0F766E
+}
+
+skinparam package {
+  BorderColor #64748B
+  BackgroundColor #FFFFFF
+}
+
+skinparam node {
+  BorderColor #475569
+  BackgroundColor #F8FAFC
+}

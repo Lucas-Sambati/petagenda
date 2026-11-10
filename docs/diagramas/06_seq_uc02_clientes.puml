@@ -1,0 +1,66 @@
+@startuml 06_seq_uc02_clientes
+!include _estilo.iuml
+title UC02 – Manter clientes
+hide footbox
+autonumber
+
+actor "Atendente" as A
+boundary "Telas de\nclientes" as T
+control "clientes.py\n(Controller)" as C
+participant "validacoes.py" as V
+entity "Cliente\n(Model)" as M
+database "SQLite" as DB
+
+alt Consultar clientes (RF04)
+  A -> T : busca por nome, CPF ou telefone
+  T -> C : GET /clientes/?q=termo
+  C -> DB : SELECT cliente (filtro nome/CPF/telefone)
+  DB --> C : clientes encontrados
+  C --> T : lista.html
+  T --> A : exibe os clientes
+
+else Cadastrar cliente (RF03)
+  A -> T : preenche os dados e clica em "Salvar"
+  T -> C : POST /clientes/novo
+  C -> V : validar_cliente(form)
+  V -> V : cpf_valido(cpf) (RN01)
+  V -> DB : SELECT cliente WHERE cpf = ?
+  V --> C : (dados, erros)
+  alt dados válidos
+    C -> M : Cliente(**dados)
+    C -> DB : INSERT INTO cliente
+    C --> T : redireciona ao detalhe do cliente
+    T --> A : "Cliente cadastrado com sucesso!"
+  else dados inválidos
+    C --> T : formulário com os erros
+    T --> A : campos destacados em vermelho
+  end
+
+else Alterar cliente (RF05)
+  A -> T : altera os dados e clica em "Salvar"
+  T -> C : POST /clientes/{id}/editar
+  C -> V : validar_cliente(form, id)
+  V --> C : (dados, erros)
+  alt dados válidos
+    C -> DB : UPDATE cliente SET ...
+    C --> T : redireciona ao detalhe do cliente
+    T --> A : "Dados do cliente atualizados!"
+  else dados inválidos
+    C --> T : formulário com os erros
+  end
+
+else Excluir cliente (RF06)
+  A -> T : clica em "Excluir" e confirma
+  T -> C : POST /clientes/{id}/excluir
+  C -> M : possui_pets()
+  M -> DB : SELECT pet WHERE cliente_id = ?
+  M --> C : True / False
+  alt cliente sem pets
+    C -> DB : DELETE FROM cliente
+    C --> T : redireciona à lista
+    T --> A : "Cliente excluído com sucesso!"
+  else cliente com pets (RN08)
+    C --> T : aviso: exclua ou transfira os pets
+  end
+end
+@enduml

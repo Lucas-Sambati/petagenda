@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block titulo %}{{ "Editar pet" if pet else "Novo pet" }}{% endblock %}
+{% block conteudo %}
+<div class="page-header">
+  <h1 class="h3 mb-0"><i class="bi bi-heart me-2"></i>{{ "Editar pet" if pet else "Novo pet" }}</h1>
+</div>
+
+<div class="card">
+  <div class="card-body p-4">
+    {% if not opcoes_clientes %}
+    <div class="alert alert-warning">Cadastre um cliente antes de cadastrar o pet. <a href="{{ url_for('clientes.novo') }}">Novo cliente</a></div>
+    {% endif %}
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="row">
+        <div class="col-md-6">{{ m.selecao("cliente_id", "Tutor (cliente)", opcoes_clientes, valores, erros, obrigatorio=true) }}</div>
+        <div class="col-md-6">{{ m.campo("nome", "Nome do pet", valores, erros, obrigatorio=true, maxlength=60) }}</div>
+        <div class="col-md-4">{{ m.selecao("especie", "Espécie", opcoes_especies, valores, erros, obrigatorio=true) }}</div>
+        <div class="col-md-4">{{ m.selecao("porte", "Porte", opcoes_portes, valores, erros, obrigatorio=true) }}</div>
+        <div class="col-md-4">{{ m.campo("data_nascimento", "Data de nascimento", valores, erros, tipo="date", max=hoje_iso()) }}</div>
+        <div class="col-md-6">{{ m.campo("raca", "Raça", valores, erros, placeholder="Ex.: Poodle, SRD", maxlength=60) }}</div>
+        <div class="col-md-6">{{ m.area_texto("observacoes", "Observações", valores, erros, linhas=2, ajuda="Alergias, comportamento, cuidados especiais...") }}</div>
+      </div>
+      <p class="small text-muted"><span class="text-danger">*</span> Campos obrigatórios</p>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+        <a href="{{ url_for('pets.listar') }}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

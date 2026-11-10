@@ -1,0 +1,19 @@
+# Ambiente virtual e caches do Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Banco de dados local (é recriado automaticamente ao executar)
+instance/
+*.db
+
+# Editores / sistema operacional
+.vscode/
+.idea/
+.claude/
+Thumbs.db
+.DS_Store

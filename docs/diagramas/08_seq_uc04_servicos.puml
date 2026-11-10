@@ -1,0 +1,59 @@
+@startuml 08_seq_uc04_servicos
+!include _estilo.iuml
+skinparam maxMessageSize 140
+title UC04 – Manter serviços
+hide footbox
+autonumber
+
+actor "Administrador" as A
+boundary "Telas de\nserviços" as T
+control "servicos.py\n(Controller)" as C
+participant "seguranca.py" as S
+participant "validacoes.py" as V
+entity "Servico\n(Model)" as M
+database "SQLite" as DB
+
+alt Consultar serviços (RF12)
+  A -> T : acessa o menu "Serviços"
+  T -> C : GET /servicos/
+  C -> DB : SELECT servico ORDER BY nome
+  DB --> C : serviços
+  C --> T : lista.html
+  T --> A : exibe preço, duração e situação
+
+else Cadastrar ou alterar serviço (RF11 e RF13)
+  A -> T : preenche os dados e clica em "Salvar"
+  T -> C : POST /servicos/novo ou /{id}/editar
+  C -> S : admin_required (RN10)
+  alt perfil não é Administrador
+    S --> T : HTTP 403 – Acesso negado
+  else perfil Administrador
+    C -> V : validar_servico(form, id)
+    V -> DB : SELECT servico WHERE nome = ?
+    V --> C : (dados, erros)
+    alt dados válidos
+      C -> M : Servico(**dados) / atualiza
+      C -> DB : INSERT ou UPDATE servico
+      C --> T : redireciona à lista
+      T --> A : "Serviço salvo com sucesso!"
+    else dados inválidos
+      C --> T : formulário com os erros
+    end
+  end
+
+else Excluir serviço (RF14)
+  A -> T : clica em "Excluir" e confirma
+  T -> C : POST /servicos/{id}/excluir
+  C -> S : admin_required (RN10)
+  C -> M : possui_agendamentos()
+  M -> DB : SELECT agendamento WHERE servico_id = ?
+  M --> C : True / False
+  alt serviço nunca agendado
+    C -> DB : DELETE FROM servico
+    C --> T : redireciona à lista
+    T --> A : "Serviço excluído com sucesso!"
+  else serviço já agendado (RN09)
+    C --> T : aviso: apenas inativar o serviço
+  end
+end
+@enduml

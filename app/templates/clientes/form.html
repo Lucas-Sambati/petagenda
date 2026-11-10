@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block titulo %}{{ "Editar cliente" if cliente else "Novo cliente" }}{% endblock %}
+{% block conteudo %}
+<div class="page-header">
+  <h1 class="h3 mb-0">
+    <i class="bi bi-person-vcard me-2"></i>{{ "Editar cliente" if cliente else "Novo cliente" }}
+  </h1>
+</div>
+
+<div class="card">
+  <div class="card-body p-4">
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="row">
+        <div class="col-md-8">{{ m.campo("nome", "Nome completo", valores, erros, obrigatorio=true, maxlength=100) }}</div>
+        <div class="col-md-4">{{ m.campo("cpf", "CPF", valores, erros, obrigatorio=true, placeholder="000.000.000-00", data_mascara="cpf", inputmode="numeric") }}</div>
+        <div class="col-md-4">{{ m.campo("telefone", "Telefone (com DDD)", valores, erros, obrigatorio=true, placeholder="(43) 99999-9999", data_mascara="telefone", inputmode="tel") }}</div>
+        <div class="col-md-8">{{ m.campo("email", "E-mail", valores, erros, tipo="email", placeholder="nome@exemplo.com", maxlength=120) }}</div>
+        <div class="col-12">{{ m.campo("endereco", "Endereço", valores, erros, placeholder="Rua, número - Cidade/UF", maxlength=200) }}</div>
+      </div>
+      <p class="small text-muted"><span class="text-danger">*</span> Campos obrigatórios</p>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Salvar</button>
+        <a href="{{ url_for('clientes.detalhe', cliente_id=cliente.id) if cliente else url_for('clientes.listar') }}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+@startuml 02_atividade_agendamento
+!include _estilo.iuml
+title Diagrama de Atividade – Processo de agendamento de atendimento
+
+|Atendente|
+start
+repeat
+  :Informar e-mail e senha;
+  |Sistema|
+  :Validar credenciais;
+backward:Exibir "E-mail ou senha inválidos";
+repeat while (Credenciais válidas?) is (não) not (sim)
+:Exibir painel com a agenda do dia;
+
+|Atendente|
+:Buscar cliente por nome, CPF ou telefone;
+|Sistema|
+:Pesquisar e exibir resultados;
+|Atendente|
+if (Cliente encontrado?) then (não)
+  :Cadastrar novo cliente;
+  |Sistema|
+  :Validar dados (CPF válido e único)
+  e gravar cliente;
+else (sim)
+endif
+
+|Atendente|
+if (Pet já cadastrado?) then (não)
+  :Cadastrar pet vinculado ao cliente;
+  |Sistema|
+  :Validar e gravar pet;
+else (sim)
+endif
+
+|Atendente|
+repeat
+  :Selecionar pet, serviço, data e horário;
+  |Sistema|
+  :Calcular término pela duração do serviço;
+  :Verificar regras: data futura, horário de
+  funcionamento e conflito de horário;
+backward:Informar o motivo e solicitar outro horário;
+repeat while (Horário disponível?) is (não) not (sim)
+:Gravar agendamento com status "Agendado"
+e valor vigente do serviço;
+:Exibir confirmação na agenda;
+
+|Atendente|
+:Realizar o atendimento na data marcada;
+if (Pet compareceu?) then (sim)
+  :Marcar como "Concluído";
+else (não)
+  :Marcar como "Cancelado";
+endif
+|Sistema|
+:Atualizar status do agendamento;
+stop
+@enduml

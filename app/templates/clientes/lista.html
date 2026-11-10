@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block titulo %}Clientes{% endblock %}
+{% block conteudo %}
+<div class="page-header">
+  <div>
+    <h1 class="h3 mb-0"><i class="bi bi-people me-2"></i>Clientes</h1>
+    <p class="text-muted mb-0">Tutores dos pets atendidos pelo pet shop.</p>
+  </div>
+  <a href="{{ url_for('clientes.novo') }}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>Novo cliente</a>
+</div>
+
+<div class="card">
+  <div class="card-body border-bottom">
+    <form class="row g-2" method="get">
+      <div class="col-md-8 col-lg-6">
+        <input type="search" class="form-control" name="q" value="{{ termo }}" placeholder="Buscar por nome, CPF ou telefone">
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search me-1"></i>Buscar</button>
+        {% if termo %}<a class="btn btn-link" href="{{ url_for('clientes.listar') }}">Limpar</a>{% endif %}
+      </div>
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th class="text-center">Pets</th><th class="text-end">Ações</th></tr>
+      </thead>
+      <tbody>
+      {% for cliente in clientes %}
+        <tr>
+          <td><a href="{{ url_for('clientes.detalhe', cliente_id=cliente.id) }}" class="fw-semibold">{{ cliente.nome }}</a></td>
+          <td class="text-nowrap">{{ cliente.cpf_formatado }}</td>
+          <td class="text-nowrap">{{ cliente.telefone_formatado }}</td>
+          <td>{{ cliente.email or "—" }}</td>
+          <td class="text-center"><span class="badge text-bg-light border">{{ cliente.pets|length }}</span></td>
+          <td class="text-end text-nowrap">
+            <a href="{{ url_for('clientes.detalhe', cliente_id=cliente.id) }}" class="btn btn-sm btn-outline-secondary" title="Ver detalhes"><i class="bi bi-eye"></i></a>
+            <a href="{{ url_for('clientes.editar', cliente_id=cliente.id) }}" class="btn btn-sm btn-outline-primary" title="Editar"><i class="bi bi-pencil"></i></a>
+            {{ m.botao_excluir(url_for('clientes.excluir', cliente_id=cliente.id), "Excluir o cliente " ~ cliente.nome ~ "?") }}
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">Nenhum cliente encontrado.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer bg-white small text-muted">{{ clientes|length }} cliente(s)</div>
+</div>
+{% endblock %}

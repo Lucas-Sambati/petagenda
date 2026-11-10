@@ -1,0 +1,79 @@
+@startuml 03_der
+!include _estilo.iuml
+hide circle
+hide empty members
+skinparam linetype ortho
+skinparam nodesep 70
+skinparam ranksep 70
+
+entity "usuario" as usuario {
+  * **id** : INTEGER <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * email : VARCHAR(120) <<UNIQUE>>
+  * senha_hash : VARCHAR(255)
+  * perfil : VARCHAR(20) <<CHECK>>
+  * ativo : BOOLEAN
+  * criado_em : DATETIME
+}
+
+entity "cliente" as cliente {
+  * **id** : INTEGER <<PK>>
+  --
+  * nome : VARCHAR(100)
+  * cpf : VARCHAR(11) <<UNIQUE>>
+  * telefone : VARCHAR(11)
+    email : VARCHAR(120)
+    endereco : VARCHAR(200)
+  * criado_em : DATETIME
+}
+
+entity "pet" as pet {
+  * **id** : INTEGER <<PK>>
+  --
+  * //cliente_id// : INTEGER <<FK>>
+  * nome : VARCHAR(60)
+  * especie : VARCHAR(20) <<CHECK>>
+    raca : VARCHAR(60)
+  * porte : VARCHAR(20) <<CHECK>>
+    data_nascimento : DATE
+    observacoes : TEXT
+  * criado_em : DATETIME
+}
+
+entity "servico" as servico {
+  * **id** : INTEGER <<PK>>
+  --
+  * nome : VARCHAR(80) <<UNIQUE>>
+    descricao : VARCHAR(255)
+  * preco : NUMERIC(10,2)
+  * duracao_minutos : INTEGER
+  * ativo : BOOLEAN
+}
+
+entity "agendamento" as agendamento {
+  * **id** : INTEGER <<PK>>
+  --
+  * //pet_id// : INTEGER <<FK>>
+  * //servico_id// : INTEGER <<FK>>
+  * //usuario_id// : INTEGER <<FK>>
+  * data_hora_inicio : DATETIME
+  * data_hora_fim : DATETIME
+  * valor : NUMERIC(10,2)
+  * status : VARCHAR(20) <<CHECK>>
+    observacoes : TEXT
+  * criado_em : DATETIME
+}
+
+cliente ||--o{ pet : possui
+pet ||--o{ agendamento : recebe
+servico ||--o{ agendamento : "é prestado em"
+usuario ||--o{ agendamento : registra
+
+legend right
+  **Legenda**
+  * campo obrigatório (NOT NULL)
+  PK = chave primária · FK = chave estrangeira
+  Notação pé de galinha: um (||) para zero ou muitos (o{)
+end legend
+@enduml

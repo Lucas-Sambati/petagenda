@@ -1,0 +1,42 @@
+@startuml 05_seq_uc01_autenticar
+!include _estilo.iuml
+skinparam maxMessageSize 140
+title UC01 – Autenticar usuário
+hide footbox
+autonumber
+
+actor "Atendente /\nAdministrador" as A
+boundary "Tela de login\n(login.html)" as T
+control "auth.py\n(Controller)" as C
+entity "Usuario\n(Model)" as M
+database "SQLite" as DB
+
+A -> T : acessa o sistema
+T -> C : GET /login
+C --> T : exibe formulário de login
+A -> T : informa e-mail e senha e clica em "Entrar"
+T -> C : POST /login (email, senha, csrf_token)
+C -> DB : SELECT * FROM usuario WHERE email = ?
+DB --> C : registro do usuário (ou vazio)
+
+opt usuário encontrado e ativo
+  C -> M : verificar_senha(senha)
+  M --> C : True / False (compara o hash)
+end
+
+alt credenciais válidas
+  C -> C : session.clear()\nsession["usuario_id"] = usuario.id
+  C --> T : redireciona para o painel (/)
+  T --> A : exibe "Bem-vindo(a)" e a agenda do dia
+else credenciais inválidas
+  C --> T : exibe login.html com mensagem
+  T --> A : "E-mail ou senha inválidos."
+end
+
+== Encerrar sessão (RF02) ==
+A -> T : clica em "Sair"
+T -> C : POST /logout
+C -> C : session.clear()
+C --> T : redireciona para /login
+T --> A : "Você saiu do sistema."
+@enduml
